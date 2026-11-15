@@ -58,6 +58,7 @@ h1 {
   min-width: 0;
 }
 .gallery-stage {
+  touch-action: manipulation;
   position: relative;
   width: 100%;
   aspect-ratio: 1;
@@ -112,6 +113,7 @@ h1 {
   min-width: 0;
 }
 #stage {
+  touch-action: manipulation;
   position: relative;
   width: 100%;
   aspect-ratio: 1;

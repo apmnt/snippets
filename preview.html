@@ -15,6 +15,9 @@
       }
       canvas {
         display: block;
+        /* p5 sets an inline touch-action; keep scrolling and pinch zoom while
+           disabling the browser's double-tap zoom gesture. */
+        touch-action: manipulation !important;
       }
     </style>
   </head>
