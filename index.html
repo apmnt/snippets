@@ -16,15 +16,24 @@
         <select id="demo"></select>
         <button id="restart" type="button">Restart</button>
       </div>
-      <section aria-label="Demo preview">
-        <div id="stage"></div>
-        <p id="description" aria-live="polite"></p>
-        <p id="error" role="alert" hidden></p>
-      </section>
-      <details>
-        <summary>View code</summary>
-        <pre><code id="source"></code></pre>
-      </details>
+      <div class="workspace">
+        <section class="preview-pane" aria-label="Demo preview">
+          <div id="stage"></div>
+          <p id="description" aria-live="polite"></p>
+          <p id="error" role="alert" hidden></p>
+        </section>
+        <section class="code-pane" aria-label="Code editor">
+          <div class="editor-toolbar">
+            <span>JavaScript</span>
+            <span id="status" role="status">Live preview</span>
+            <button id="reset" type="button">Reset code</button>
+          </div>
+          <div id="editor"></div>
+          <p class="editor-hint">
+            Edits run automatically. Changes stay in this tab until you reload.
+          </p>
+        </section>
+      </div>
     </main>
     <script type="module" src="/src/main.js"></script>
   </body>

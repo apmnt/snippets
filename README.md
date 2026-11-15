@@ -9,6 +9,21 @@ npm run dev
 
 `npm run build` creates a static site in `dist/`. `npm run preview` serves that build.
 
+## Live editing
+
+The Monaco editor shows the selected demo's JavaScript. Edits rerun the sketch
+after a 450 ms pause, in a fresh iframe that clears the previous run's animations
+and listeners. Syntax and runtime errors appear below the preview; fixing the code
+runs it again. **Restart** reruns the current code; **Reset code** restores the demo
+from disk. Edits are kept per demo in memory until the page reloads and do not
+modify source files.
+
+The live editor supports imports from `"../p5-demo.js"` and `"p5"`, plus demos
+using browser APIs directly. Other module imports display an error; bundle any
+additional libraries into `src/preview.js` and add a bridge for them to enable
+them in the editor. The iframe manages each run's lifecycle; it is not a security
+sandbox for untrusted code.
+
 ## Add a p5.js demo
 
 Create `src/demos/example.js`:
