@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
     <title>Sketch preview</title>
     <style>
       html,
@@ -12,17 +15,18 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        touch-action: pan-x pan-y;
       }
       canvas {
         display: block;
-        /* p5 sets an inline touch-action; keep scrolling and pinch zoom while
-           disabling the browser's double-tap zoom gesture. */
-        touch-action: manipulation !important;
+        /* Override p5's inline touch-action with the page's no-zoom policy. */
+        touch-action: pan-x pan-y !important;
       }
     </style>
   </head>
   <body>
     <div id="stage"></div>
+    <script type="module" src="/src/disable-zoom.js"></script>
     <script type="module" src="/src/preview.js"></script>
   </body>
 </html>
