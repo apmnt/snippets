@@ -43,10 +43,13 @@ function clearError() {
 }
 
 function updateDemos(nextDemos) {
-  const selected = select.value;
-  // Refresh untouched demos from disk, keeping edits made in the browser.
+  const selected =
+    select.value || new URL(window.location.href).searchParams.get("demo");
+  // Saved file changes take priority; keep browser drafts for unchanged files.
   for (const demo of demos) {
-    if (drafts.get(demo.id) === demo.code) drafts.delete(demo.id);
+    const next = nextDemos.find((item) => item.id === demo.id);
+    if (next?.code !== demo.code || drafts.get(demo.id) === demo.code)
+      drafts.delete(demo.id);
   }
   demos = nextDemos;
   select.replaceChildren();
@@ -102,6 +105,10 @@ function showDemo() {
   clearError();
   clearTimeout(pending);
   const demo = demos.find((item) => item.id === select.value);
+  const url = new URL(window.location.href);
+  if (demo) url.searchParams.set("demo", demo.id);
+  else url.searchParams.delete("demo");
+  window.history.replaceState(window.history.state, "", url);
   changingDemo = true;
   setEditorSource(
     editor,
