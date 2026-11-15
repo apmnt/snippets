@@ -14,10 +14,9 @@
     "@fontsource/inter": "^5.2.8",
     "es-module-lexer": "^3.0.4",
     "monaco-editor": "^0.57.0",
-    "p5": "^1.11.11"
+    "p5": "^2.4.0"
   },
   "devDependencies": {
-    "@types/p5": "^1.7.7",
     "prettier": "3.10.1",
     "vite": "^7.2.2"
   }

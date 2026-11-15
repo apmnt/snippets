@@ -12,7 +12,7 @@ export function p5Demo(sketch) {
       const setup = p.setup;
       p.setup = () => {
         p.createCanvas(container.clientWidth, container.clientHeight);
-        setup?.();
+        return setup?.();
       };
     }, container);
 
