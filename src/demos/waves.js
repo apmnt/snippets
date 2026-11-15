@@ -8,7 +8,7 @@ export const meta = {
 
 export default p5Demo((p) => {
   p.draw = () => {
-    p.background("#f0f0ed");
+    p.background("#ffffff");
     p.noFill();
     p.stroke("#555550");
     const time = p.millis() * 0.0006;
