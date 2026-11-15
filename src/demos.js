@@ -1,3 +1,5 @@
+import { demoMeta } from "./demo-meta.js";
+
 // Vite discovers new files automatically, including during development.
 const modules = import.meta.glob("./demos/*.{js,ts}", { eager: true });
 const sources = import.meta.glob("./demos/*.{js,ts}", {
@@ -11,7 +13,11 @@ export const demos = Object.entries(modules)
   .map(([path, module]) => {
     const filename = path.split("/").pop();
     const name = filename.replace(/\.(js|ts)$/, "");
-    const { title, description = "", order = Infinity } = module.meta ?? {};
+    const {
+      title,
+      description = "",
+      order = Infinity,
+    } = demoMeta[filename] ?? {};
     return {
       id: filename,
       filename,

@@ -37,12 +37,6 @@ Create `src/demos/example.js`:
 ```js
 import { p5Demo } from "../p5-demo.js";
 
-export const meta = {
-  title: "Example",
-  description: "A circle.",
-  order: 5,
-};
-
 export default p5Demo((p) => {
   // The helper creates and resizes the canvas for you.
   p.setup = () => p.noStroke();
@@ -53,9 +47,23 @@ export default p5Demo((p) => {
 });
 ```
 
-Every `src/demos/*.js` file with a default function export is discovered automatically, along with its source code. The dropdown updates during development without reloading the page.
+Every `src/demos/*.js` or `src/demos/*.ts` file with a default function export is discovered automatically, along with its source code. The dropdown updates during development without reloading the page.
 
-The `meta` export is optional. `title` defaults to the filename with hyphens and underscores replaced by spaces; `description` defaults to empty. `order` is an optional number: lower values appear first, followed by unordered demos alphabetically by title. The filename is the demo's unique ID.
+Demo metadata lives in `src/demo-meta.js`, keyed by the full filename, including
+its `.js` or `.ts` extension. For example, add this entry for the demo above:
+
+```js
+"example.js": {
+  title: "Example",
+  description: "A circle.",
+  order: 5,
+},
+```
+
+Metadata is optional. `title` defaults to the filename with hyphens and underscores
+replaced by spaces; `description` defaults to empty. Lower `order` values appear
+first, followed by unordered demos alphabetically by title. Metadata updates
+refresh the dropdown during development.
 
 ## Drawing helpers
 

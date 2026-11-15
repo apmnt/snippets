@@ -1,13 +1,6 @@
 import type p5 from "p5";
 import { p5Demo } from "../p5-demo.js";
 
-export const meta = {
-  title: "TypeScript points",
-  description:
-    "A typed tuple and p5.Vector. Click the canvas to move the point. Try an incorrect type in the editor to see diagnostics.",
-  order: 12,
-};
-
 type Point = [x: number, y: number];
 
 export default p5Demo((p) => {

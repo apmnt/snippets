@@ -1,13 +1,6 @@
 import { p5Demo } from "../p5-demo.js";
 import { createHelper } from "../helper.js";
 
-export const meta = {
-  title: "color palettes",
-  description:
-    "Press R to shuffle the base color. Click to regenerate; press 1–5 to compare harmonies. Click the canvas first for keyboard focus.",
-  order: 11,
-};
-
 export default p5Demo((p) => {
   const helper = createHelper(p);
   let base = "#588cbd";
