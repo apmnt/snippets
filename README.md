@@ -18,6 +18,10 @@ runs it again. **Restart** reruns the current code; **Reset code** restores the 
 from disk. Edits are kept per demo in memory until the page reloads and do not
 modify source files.
 
+Code formats with the project's Prettier settings when you leave the editor.
+Use **Format code**, **Alt+Shift+F**, or **Ctrl/Cmd+S** to format manually.
+Formatting is undoable; code with syntax errors is left unchanged.
+
 The live editor supports imports from `"../p5-demo.js"` and `"p5"`, plus demos
 using browser APIs directly. Other module imports display an error; bundle any
 additional libraries into `src/preview.js` and add a bridge for them to enable

@@ -32,6 +32,7 @@ function updateDemos(nextDemos) {
   select.disabled = demos.length === 0;
   document.querySelector("#restart").disabled = demos.length === 0;
   reset.disabled = demos.length === 0;
+  document.querySelector("#format").disabled = demos.length === 0;
   showDemo();
 }
 
@@ -96,6 +97,12 @@ const changes = editor.onDidChangeModelContent(() => {
 window.addEventListener("message", onPreviewMessage);
 select.addEventListener("change", showDemo);
 document.querySelector("#restart").addEventListener("click", runPreview);
+document.querySelector("#format").addEventListener("click", async () => {
+  const formatted = await editor.getAction("format-code").run();
+  if (!formatted)
+    status.textContent = "Couldn't format. Check JavaScript syntax.";
+  editor.focus();
+});
 reset.addEventListener("click", () => {
   drafts.delete(select.value);
   showDemo();
