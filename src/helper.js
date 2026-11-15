@@ -1,6 +1,8 @@
+import { createColorTools } from "./helper-colors.js";
+
 /**
- * Create drawing helpers for a p5 instance. Call at the end of p.draw() to
- * draw overlays in canvas coordinates.
+ * Create drawing and color helpers for a p5 instance. Call overlay tools at
+ * the end of p.draw() to draw in canvas coordinates.
  * @param {import("p5").default} p
  */
 export function createHelper(p, { enabled = true } = {}) {
@@ -34,6 +36,7 @@ export function createHelper(p, { enabled = true } = {}) {
 
   const helper = {
     enabled,
+    ...createColorTools(() => p.random()),
 
     grid({
       spacing = 50,

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
+    "colorjs.io": "^0.6.1",
     "es-module-lexer": "^3.0.4",
     "monaco-editor": "^0.57.0",
     "p5": "^2.4.0"
