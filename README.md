@@ -24,7 +24,7 @@ Code formats with the project's Prettier settings when you leave the editor.
 Use **Format code**, **Alt+Shift+F**, or **Ctrl/Cmd+S** to format manually.
 Formatting is undoable; code with syntax errors is left unchanged.
 
-The live editor supports imports from `"../p5-demo.js"` and `"p5"`, plus demos
+The live editor supports imports from `"../p5-demo.js"`, `"../helper.js"`, and `"p5"`, plus demos
 using browser APIs directly. Other module imports display an error; bundle any
 additional libraries into `src/preview.js` and add a bridge for them to enable
 them in the editor. The iframe manages each run's lifecycle; it is not a security
@@ -56,6 +56,45 @@ export default p5Demo((p) => {
 Every `src/demos/*.js` file with a default function export is discovered automatically, along with its source code. The dropdown updates during development without reloading the page.
 
 The `meta` export is optional. `title` defaults to the filename with hyphens and underscores replaced by spaces; `description` defaults to empty. `order` is an optional number: lower values appear first, followed by unordered demos alphabetically by title. The filename is the demo's unique ID.
+
+## Drawing helpers
+
+Import `createHelper` from `../helper.js` in a p5 demo. Create one helper per sketch,
+then call its tools at the end of `p.draw()` to draw overlays above your artwork.
+They use canvas coordinates (top left is 0, 0), follow canvas resizing, and restore
+your drawing styles and transforms afterward. They work in the live editor too.
+
+```js
+import { p5Demo } from "../p5-demo.js";
+import { createHelper } from "../helper.js";
+
+export default p5Demo((p) => {
+  const helper = createHelper(p);
+  p.draw = () => {
+    p.background(240);
+    // Draw your sketch here, then overlays:
+    helper.grid({ spacing: 50, labels: true });
+    helper.axes();
+    helper.point(120, 80, "target");
+    helper.bounds(100, 60, 40, 40, { label: "hitbox" });
+    helper.vector(120, 80, 40, 20, { label: "velocity" });
+    helper.hud();
+  };
+});
+```
+
+Set `helper.enabled = false` to hide all overlays, or start disabled with
+`createHelper(p, { enabled: false })`. The **Helper tools** demo shows every tool
+and uses **D** to toggle them when the preview has keyboard focus.
+
+| Tool                                   | Options                                                                                             |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `grid(options)`                        | `spacing` (50), `majorEvery` (5), `originX`, `originY` (0), `labels` (false), `color`, `majorColor` |
+| `axes(options)`                        | `x`, `y` (canvas center), `xColor`, `yColor`; positive y points down                                |
+| `point(x, y, label, options)`          | `color`, `size` (6); omit label to show coordinates                                                 |
+| `bounds(x, y, width, height, options)` | `color`, `label`                                                                                    |
+| `vector(x, y, dx, dy, options)`        | `color`, `scale` (1), `label`                                                                       |
+| `hud(options)`                         | `x`, `y` (12), `mouse`, `fps` (both true)                                                           |
 
 ## Other libraries
 

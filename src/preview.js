@@ -1,11 +1,12 @@
 import p5 from "p5";
 import { init, parse } from "es-module-lexer";
 import { p5Demo } from "./p5-demo.js";
+import { createHelper } from "./helper.js";
 import { sketchError, sketchSource, sourcePosition } from "./sketch-errors.js";
 
 // These libraries are bundled by Vite; edited modules import them through a
 // small bridge, so the same source works in development and static builds.
-window.__sketchLibraries = { p5, p5Demo };
+window.__sketchLibraries = { p5, p5Demo, createHelper };
 const bridge = URL.createObjectURL(
   new Blob(
     [
@@ -15,6 +16,17 @@ const bridge = URL.createObjectURL(
     { type: "text/javascript" },
   ),
 );
+const helperBridge = URL.createObjectURL(
+  new Blob(
+    ["export const createHelper = window.__sketchLibraries.createHelper;"],
+    { type: "text/javascript" },
+  ),
+);
+const bridges = new Map([
+  ["p5", bridge],
+  ["../p5-demo.js", bridge],
+  ["../helper.js", helperBridge],
+]);
 
 function report(type, details = {}) {
   parent.postMessage({ type, ...details }, location.origin);
@@ -42,15 +54,17 @@ window.addEventListener("message", async (event) => {
     const [imports] = parse(code);
     for (const entry of imports.toReversed()) {
       if (entry.type === "import-meta") continue;
-      if (!["../p5-demo.js", "p5"].includes(entry.specifier)) {
+      if (!bridges.has(entry.specifier)) {
         const cause = new Error(
-          `Unsupported import: ${entry.specifier ?? "dynamic expression"}. Use "p5" or "../p5-demo.js" in the live editor.`,
+          `Unsupported import: ${entry.specifier ?? "dynamic expression"}. Supported imports: ${[...bridges.keys()].join(", ")}.`,
         );
         cause.sketchPosition = sourcePosition(event.data.code, entry.start);
         throw cause;
       }
       const replacement =
-        entry.type === "dynamic" ? JSON.stringify(bridge) : bridge;
+        entry.type === "dynamic"
+          ? JSON.stringify(bridges.get(entry.specifier))
+          : bridges.get(entry.specifier);
       // Keep original line numbers even for multiline dynamic imports.
       const newlines =
         code.slice(entry.start, entry.end).match(/\n/g)?.length ?? 0;
