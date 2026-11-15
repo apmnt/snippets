@@ -62,7 +62,6 @@ h1 {
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  border-radius: 6px;
   background: #f0f0ed;
 }
 .gallery-stage iframe {
@@ -118,7 +117,6 @@ h1 {
   aspect-ratio: 1;
   flex-shrink: 0;
   background: #f0f0ed;
-  border-radius: 6px;
   overflow: hidden;
 }
 #stage iframe {
@@ -130,8 +128,6 @@ h1 {
   border: 0;
 }
 .code-pane {
-  border: 1px solid #e4e4e4;
-  border-radius: 6px;
   overflow: hidden;
 }
 .editor-toolbar {
@@ -172,8 +168,6 @@ select {
   font-family: inherit;
   color: inherit;
   background: transparent;
-  border: 1px solid #ddd;
-  border-radius: 4px;
   padding: 8px 10px;
 }
 select {
@@ -200,7 +194,6 @@ button {
   overflow: auto;
   margin: 0;
   padding: 12px;
-  border-radius: 6px;
   font: 12px/1.6 monospace;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
