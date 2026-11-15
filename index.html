@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#fafafa" />
+        <title>Snippets</title>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>Snippets</h1>
+            </header>
+            <div class="toolbar">
+                <label for="demo">Demo</label>
+                <select id="demo"></select>
+                <button id="restart" type="button">Restart</button>
+            </div>
+            <section aria-label="Demo preview">
+                <div id="stage"></div>
+                <p id="description" aria-live="polite"></p>
+                <p id="error" role="alert" hidden></p>
+            </section>
+            <details>
+                <summary>View code</summary>
+                <pre><code id="source"></code></pre>
+            </details>
+        </main>
+        <script type="module" src="/src/main.js"></script>
+    </body>
+</html>

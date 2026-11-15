@@ -1,0 +1,58 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: Inter, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+main {
+  max-width: 760px;
+  margin: 64px auto;
+  padding: 0 24px;
+}
+button,
+select {
+  font-family: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+select {
+  min-width: 0;
+  max-width: 100%;
+}
+button {
+  margin-left: auto;
+  cursor: pointer;
+}
+#stage canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+#error {
+  color: #a12c2c;
+}
+details {
+  border-top: 1px solid #e4e4e4;
+  padding-top: 16px;
+}
+summary {
+  cursor: pointer;
+  color: #666;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+@media (max-width: 520px) {
+  main {
+    margin: 32px auto;
+    padding: 0 16px;
+  }
+}
