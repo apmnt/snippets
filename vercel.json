@@ -10,8 +10,17 @@
       "includeFiles": "dist/{index.html,sketch-manifest.json}"
     }
   },
-  "rewrites": [
-    { "source": "/", "destination": "/api/share" },
-    { "source": "/index.html", "destination": "/api/share" }
+  "routes": [
+    {
+      "src": "^/$",
+      "dest": "/api/share"
+    },
+    {
+      "src": "^/index\\.html$",
+      "dest": "/api/share"
+    },
+    {
+      "handle": "filesystem"
+    }
   ]
 }
