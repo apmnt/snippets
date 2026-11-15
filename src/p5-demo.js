@@ -1,4 +1,8 @@
 import p5 from "p5";
+import { getValidLanguages } from "./p5-locale.js";
+
+// Sanitize only p5's error-message locales; leave browser preferences alone.
+p5.FES.languageCode = getValidLanguages(globalThis.navigator?.languages);
 
 /**
  * Give every sketch its own instance, canvas, and animation lifecycle.
