@@ -1,4 +1,8 @@
-// Call these at the end of p.draw() to draw overlays in canvas coordinates.
+/**
+ * Create drawing helpers for a p5 instance. Call at the end of p.draw() to
+ * draw overlays in canvas coordinates.
+ * @param {import("p5")} p
+ */
 export function createHelper(p, { enabled = true } = {}) {
   function overlay(draw) {
     if (!helper.enabled) return;

@@ -1,6 +1,10 @@
 import p5 from "p5";
 
-// Give every sketch its own instance, canvas, and animation lifecycle.
+/**
+ * Give every sketch its own instance, canvas, and animation lifecycle.
+ * @param {(p: p5) => void} sketch
+ * @returns {(container: HTMLElement) => () => void}
+ */
 export function p5Demo(sketch) {
   return (container) => {
     const instance = new p5((p) => {
