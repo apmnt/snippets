@@ -23,6 +23,74 @@ main {
   gap: 12px;
   margin-bottom: 24px;
 }
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.page-header nav {
+  display: flex;
+  gap: 16px;
+}
+.page-header a {
+  color: #666;
+  text-decoration: none;
+}
+.page-header a[aria-current="page"] {
+  color: #222;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px 24px;
+  margin-top: 16px;
+}
+.gallery-card {
+  min-width: 0;
+}
+.gallery-stage {
+  position: relative;
+  height: 420px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #f0f0ed;
+}
+.gallery-stage iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.gallery-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-top: 12px;
+}
+.gallery-footer p {
+  flex: 1;
+  margin: 0;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.gallery-footer button {
+  flex-shrink: 0;
+}
+.gallery-error {
+  position: absolute;
+  inset: auto 0 0;
+  margin: 0;
+  padding: 12px;
+  color: #a12c2c;
+  background: #fff;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
 .workspace {
   display: grid;
   flex: 1;
@@ -118,6 +186,12 @@ button {
   min-height: 1.6em;
 }
 @media (max-width: 900px) {
+  .gallery {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gallery-stage {
+    height: 360px;
+  }
   .workspace {
     grid-template-columns: minmax(0, 1fr);
   }

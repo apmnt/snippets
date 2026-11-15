@@ -56,9 +56,22 @@ window.addEventListener("message", async (event) => {
   if (
     event.source !== parent ||
     event.origin !== location.origin ||
-    event.data?.type !== "run-sketch"
+    !["run-sketch", "run-demo"].includes(event.data?.type)
   )
     return;
+
+  if (event.data.type === "run-demo") {
+    try {
+      const { demos } = await import("./demos.js");
+      const demo = demos.find((item) => item.id === event.data.id);
+      if (!demo) throw new Error("Demo not found.");
+      demo.mount(document.querySelector("#stage"));
+      report("sketch-ready");
+    } catch (cause) {
+      report("sketch-error", sketchError(cause));
+    }
+    return;
+  }
 
   let url;
   sourceMap = event.data.sourceMap;

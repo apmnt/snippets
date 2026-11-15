@@ -9,6 +9,11 @@ npm run dev
 
 `npm run build` creates a static site in `dist/`. `npm run preview` serves that build.
 
+Use **Gallery** (or open `/gallery.html`) to see all saved JavaScript and
+TypeScript demos in metadata order. Each item shows its canvas, description, and
+a **Redraw** button that restarts only that demo. The gallery uses the saved files
+from `src/demos`; browser editor drafts stay in the editor view.
+
 ## Live editing
 
 The Monaco editor shows the selected demo's JavaScript and extends to the bottom
