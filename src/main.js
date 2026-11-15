@@ -1,6 +1,3 @@
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/500.css";
-import "./style.css";
 import { demos as initialDemos } from "./demos.js";
 import {
   createEditor,
@@ -17,6 +14,8 @@ const consoleLogs = document.querySelector("#console-logs");
 const status = document.querySelector("#status");
 const reset = document.querySelector("#reset");
 const editor = createEditor(document.querySelector("#editor"));
+const typeHintsButton = document.querySelector("#toggle-type-hints");
+let typeHintsEnabled = false;
 const drafts = new Map();
 let demos = initialDemos;
 let preview;
@@ -174,6 +173,15 @@ const changes = editor.onDidChangeModelContent(() => {
 window.addEventListener("message", onPreviewMessage);
 select.addEventListener("change", showDemo);
 document.querySelector("#restart").addEventListener("click", runPreview);
+typeHintsButton.addEventListener("click", () => {
+  typeHintsEnabled = !typeHintsEnabled;
+  editor.updateOptions({
+    inlayHints: { enabled: typeHintsEnabled ? "on" : "off" },
+  });
+  typeHintsButton.textContent = `Type hints: ${typeHintsEnabled ? "on" : "off"}`;
+  typeHintsButton.setAttribute("aria-pressed", String(typeHintsEnabled));
+  editor.focus();
+});
 document.querySelector("#format").addEventListener("click", async () => {
   const formatted = await editor.getAction("format-code").run();
   if (!formatted) status.textContent = "Couldn't format. Check syntax.";

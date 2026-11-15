@@ -1,6 +1,3 @@
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/500.css";
-import "./style.css";
 import { demos } from "./demos.js";
 import { createGallery } from "./gallery-view.js";
 

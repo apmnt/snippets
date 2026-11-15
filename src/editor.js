@@ -4,6 +4,7 @@ import "monaco-editor/editor/contrib/multicursor/browser/multicursor.js";
 import "monaco-editor/editor/contrib/suggest/browser/suggestController.js";
 import "monaco-editor/editor/contrib/hover/browser/hoverContribution.js";
 import "monaco-editor/editor/contrib/parameterHints/browser/parameterHints.js";
+import "monaco-editor/editor/contrib/inlayHints/browser/inlayHintsContribution.js";
 import {
   getJavaScriptWorker,
   getTypeScriptWorker,
@@ -169,7 +170,7 @@ export function createEditor(container) {
     noSuggestionDiagnostics: false,
   });
   const defaults = [javascriptDefaults, typescriptDefaults];
-  for (const settings of defaults)
+  for (const settings of defaults) {
     settings.setCompilerOptions({
       ...settings.getCompilerOptions(),
       target: ScriptTarget.ESNext,
@@ -184,6 +185,15 @@ export function createEditor(container) {
       noEmitOnError: false,
       sourceMap: true,
     });
+    settings.setInlayHintsOptions({
+      includeInlayParameterNameHints: "all",
+      includeInlayFunctionParameterTypeHints: true,
+      includeInlayVariableTypeHints: true,
+      includeInlayPropertyDeclarationTypeHints: true,
+      includeInlayFunctionLikeReturnTypeHints: true,
+      includeInlayEnumMemberValueHints: true,
+    });
+  }
   const libraries = defaults.flatMap((settings) =>
     Object.entries(editorLibraries).map(([path, source]) =>
       settings.addExtraLib(source, path),
@@ -200,6 +210,7 @@ export function createEditor(container) {
     suggestOnTriggerCharacters: true,
     hover: { enabled: true },
     parameterHints: { enabled: true },
+    inlayHints: { enabled: "off" },
     occurrencesHighlight: "singleFile",
     selectionHighlight: true,
     minimap: { enabled: false },

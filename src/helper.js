@@ -152,6 +152,9 @@ export function createHelper(p, { enabled = true } = {}) {
         );
       });
     },
+
+    linspace: (n) => Array.from({ length: n }, (_, i) => i),
   };
+
   return helper;
 }

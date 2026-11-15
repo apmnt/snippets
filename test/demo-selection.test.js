@@ -41,6 +41,7 @@ function boot(href, demos) {
     "description",
     "restart",
     "format",
+    "toggle-type-hints",
   ])
     elements.set(`#${id}`, new Element());
   const window = {
