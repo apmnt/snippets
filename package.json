@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
@@ -14,10 +17,12 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
     "@jridgewell/trace-mapping": "^0.3.31",
+    "@sparticuz/chromium": "153.0.0",
     "colorjs.io": "^0.6.1",
     "es-module-lexer": "^3.0.4",
     "monaco-editor": "^0.57.0",
-    "p5": "^2.4.0"
+    "p5": "^2.4.0",
+    "puppeteer-core": "25.17.0"
   },
   "devDependencies": {
     "prettier": "3.10.1",

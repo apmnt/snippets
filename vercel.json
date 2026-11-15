@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/sketch-image.js": {
+      "maxDuration": 60,
+      "memory": 2048,
+      "includeFiles": "{dist/sketch-manifest.json,node_modules/@sparticuz/chromium/bin/**}"
+    },
+    "api/share.js": {
+      "includeFiles": "dist/{index.html,sketch-manifest.json}"
+    }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/api/share" },
+    { "source": "/index.html", "destination": "/api/share" }
+  ]
+}
