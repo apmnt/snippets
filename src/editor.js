@@ -1,11 +1,56 @@
 import * as monaco from "monaco-editor/editor/editor.api.js";
-import "monaco-editor/language/typescript/monaco.contribution.js";
+import { getJavaScriptWorker } from "monaco-editor/language/typescript/monaco.contribution.js";
 import "monaco-editor/languages/definitions/javascript/register.js";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 import TypeScriptWorker from "monaco-editor/language/typescript/ts.worker.js?worker";
 import formatOptions from "../.prettierrc.json";
 
 let formatter;
+
+export function setSketchError(editor, error) {
+  const model = editor.getModel();
+  if (!model) return;
+  const line = Math.min(error?.line ?? 1, model.getLineCount());
+  monaco.editor.setModelMarkers(
+    model,
+    "sketch",
+    error?.line
+      ? [
+          {
+            severity: monaco.MarkerSeverity.Error,
+            message: error.message,
+            source: "Sketch",
+            startLineNumber: line,
+            startColumn: error.column ?? 1,
+            endLineNumber: line,
+            endColumn: model.getLineMaxColumn(line),
+          },
+        ]
+      : [],
+  );
+}
+
+export async function getSyntaxError(editor) {
+  const model = editor.getModel();
+  const worker = await (await getJavaScriptWorker())(model.uri);
+  const diagnostics = await worker.getSyntacticDiagnostics(
+    model.uri.toString(),
+  );
+  const diagnostic = diagnostics.find((item) => item.category === 1);
+  if (!diagnostic) return;
+  const position = model.getPositionAt(diagnostic.start ?? 0);
+  const flattenMessage = (message) =>
+    typeof message === "string"
+      ? message
+      : [message.messageText, ...(message.next ?? []).map(flattenMessage)].join(
+          " ",
+        );
+  return {
+    message: flattenMessage(diagnostic.messageText),
+    line: position.lineNumber,
+    column: position.column,
+  };
+}
 
 async function formatCode(editor) {
   const model = editor.getModel();

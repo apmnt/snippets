@@ -10,6 +10,9 @@ body {
   margin: 0;
 }
 main {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 64px);
   max-width: 1600px;
   margin: 32px auto;
   padding: 0 24px;
@@ -22,11 +25,14 @@ main {
 }
 .workspace {
   display: grid;
+  flex: 1;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 24px;
 }
 .preview-pane,
 .code-pane {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
 }
 #stage {
@@ -64,7 +70,8 @@ main {
   font-size: 12px;
 }
 #editor {
-  height: 520px;
+  flex: 1;
+  min-height: 520px;
 }
 .editor-hint {
   padding: 0 12px;
@@ -91,8 +98,10 @@ button {
   width: 100% !important;
   height: 100% !important;
 }
-#error {
+#preview-error {
   color: #a12c2c;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 @media (max-width: 900px) {
   .workspace {

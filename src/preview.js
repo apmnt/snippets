@@ -1,6 +1,7 @@
 import p5 from "p5";
 import { init, parse } from "es-module-lexer";
 import { p5Demo } from "./p5-demo.js";
+import { sketchError, sketchSource, sourcePosition } from "./sketch-errors.js";
 
 // These libraries are bundled by Vite; edited modules import them through a
 // small bridge, so the same source works in development and static builds.
@@ -15,15 +16,15 @@ const bridge = URL.createObjectURL(
   ),
 );
 
-function report(type, message) {
-  parent.postMessage({ type, message }, location.origin);
+function report(type, details = {}) {
+  parent.postMessage({ type, ...details }, location.origin);
 }
 
 window.addEventListener("error", (event) => {
-  report("sketch-error", event.message);
+  report("sketch-error", sketchError(event.error ?? event.message, event));
 });
 window.addEventListener("unhandledrejection", (event) => {
-  report("sketch-error", event.reason?.message ?? String(event.reason));
+  report("sketch-error", sketchError(event.reason));
 });
 
 window.addEventListener("message", async (event) => {
@@ -42,14 +43,24 @@ window.addEventListener("message", async (event) => {
     for (const entry of imports.toReversed()) {
       if (entry.type === "import-meta") continue;
       if (!["../p5-demo.js", "p5"].includes(entry.specifier)) {
-        throw new Error(
+        const cause = new Error(
           `Unsupported import: ${entry.specifier ?? "dynamic expression"}. Use "p5" or "../p5-demo.js" in the live editor.`,
         );
+        cause.sketchPosition = sourcePosition(event.data.code, entry.start);
+        throw cause;
       }
       const replacement =
         entry.type === "dynamic" ? JSON.stringify(bridge) : bridge;
-      code = code.slice(0, entry.start) + replacement + code.slice(entry.end);
+      // Keep original line numbers even for multiline dynamic imports.
+      const newlines =
+        code.slice(entry.start, entry.end).match(/\n/g)?.length ?? 0;
+      code =
+        code.slice(0, entry.start) +
+        replacement +
+        "\n".repeat(newlines) +
+        code.slice(entry.end);
     }
+    code += `\n//# sourceURL=${sketchSource}\n`;
     url = URL.createObjectURL(new Blob([code], { type: "text/javascript" }));
     const module = await import(/* @vite-ignore */ url);
     if (typeof module.default !== "function") {
@@ -60,7 +71,7 @@ window.addEventListener("message", async (event) => {
     module.default(document.querySelector("#stage"));
     report("sketch-ready");
   } catch (cause) {
-    report("sketch-error", cause.message);
+    report("sketch-error", sketchError(cause));
   } finally {
     if (url) URL.revokeObjectURL(url);
   }

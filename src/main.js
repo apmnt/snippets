@@ -2,11 +2,11 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "./style.css";
 import { demos as initialDemos } from "./demos.js";
-import { createEditor } from "./editor.js";
+import { createEditor, getSyntaxError, setSketchError } from "./editor.js";
 
 const select = document.querySelector("#demo");
 const stage = document.querySelector("#stage");
-const error = document.querySelector("#error");
+const previewError = document.querySelector("#preview-error");
 const status = document.querySelector("#status");
 const reset = document.querySelector("#reset");
 const editor = createEditor(document.querySelector("#editor"));
@@ -16,6 +16,23 @@ let preview;
 let previewCode;
 let pending;
 let changingDemo = false;
+let runVersion = 0;
+
+function showError(details) {
+  previewError.textContent = details.line
+    ? `Line ${details.line}: ${details.message}`
+    : details.message;
+  previewError.hidden = false;
+  status.textContent = details.line
+    ? `Error on line ${details.line}`
+    : "Check your code";
+  setSketchError(editor, details);
+}
+
+function clearError() {
+  previewError.hidden = true;
+  setSketchError(editor);
+}
 
 function updateDemos(nextDemos) {
   const selected = select.value;
@@ -36,11 +53,25 @@ function updateDemos(nextDemos) {
   showDemo();
 }
 
-function runPreview() {
+async function runPreview() {
   clearTimeout(pending);
-  error.hidden = true;
+  const version = ++runVersion;
+  clearError();
   status.textContent = "Running…";
   previewCode = editor.getValue();
+  preview = undefined;
+  stage.replaceChildren();
+  try {
+    const syntaxError = await getSyntaxError(editor);
+    if (version !== runVersion) return;
+    if (syntaxError) {
+      showError(syntaxError);
+      return;
+    }
+  } catch {
+    // A worker failure must not prevent the preview from running.
+    if (version !== runVersion) return;
+  }
   preview = document.createElement("iframe");
   preview.title = "Live sketch preview";
   preview.src = `${import.meta.env.BASE_URL}preview.html`;
@@ -48,6 +79,8 @@ function runPreview() {
 }
 
 function showDemo() {
+  ++runVersion;
+  clearError();
   clearTimeout(pending);
   const demo = demos.find((item) => item.id === select.value);
   changingDemo = true;
@@ -60,7 +93,6 @@ function showDemo() {
   } else {
     preview = undefined;
     stage.replaceChildren();
-    error.hidden = true;
     status.textContent = "No demos";
   }
 }
@@ -78,16 +110,16 @@ function onPreviewMessage(event) {
     );
   } else if (event.data?.type === "sketch-ready") {
     // An animation can throw before setup finishes; retain that error.
-    if (error.hidden) status.textContent = "Live preview";
+    if (previewError.hidden) status.textContent = "Live preview";
   } else if (event.data?.type === "sketch-error") {
-    error.textContent = event.data.message;
-    error.hidden = false;
-    status.textContent = "Check your code";
+    if (editor.getValue() === previewCode) showError(event.data);
   }
 }
 
 const changes = editor.onDidChangeModelContent(() => {
   if (changingDemo || !select.value) return;
+  ++runVersion;
+  clearError();
   drafts.set(select.value, editor.getValue());
   clearTimeout(pending);
   status.textContent = "Waiting for edits…";
@@ -115,6 +147,7 @@ if (import.meta.hot) {
   });
   import.meta.hot.dispose(() => {
     clearTimeout(pending);
+    ++runVersion;
     window.removeEventListener("message", onPreviewMessage);
     preview?.remove();
     changes.dispose();
