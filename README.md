@@ -21,7 +21,7 @@ of the viewport alongside the preview on larger screens. Edits rerun the sketch
 after a 450 ms pause, in a fresh iframe that clears the previous run's animations
 and listeners. Syntax and runtime errors appear below the canvas with their source
 line number and an underline in the code when a source location is available; fixing the code
-runs it again. **Restart** reruns the current code; **Reset code** restores the demo
+runs it again. **Redraw** reruns the current code; **Reset code** restores the demo
 from disk. Edits are kept per demo in memory until the page reloads and do not
 modify source files.
 
