@@ -103,6 +103,20 @@ button {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+#console-logs {
+  height: 140px;
+  flex-shrink: 0;
+  overflow: auto;
+  margin: 0;
+  padding: 12px;
+  border-radius: 6px;
+  font: 12px/1.6 monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+#console-logs > div {
+  min-height: 1.6em;
+}
 @media (max-width: 900px) {
   .workspace {
     grid-template-columns: minmax(0, 1fr);

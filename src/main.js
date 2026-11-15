@@ -7,6 +7,7 @@ import { createEditor, getSyntaxError, setSketchError } from "./editor.js";
 const select = document.querySelector("#demo");
 const stage = document.querySelector("#stage");
 const previewError = document.querySelector("#preview-error");
+const consoleLogs = document.querySelector("#console-logs");
 const status = document.querySelector("#status");
 const reset = document.querySelector("#reset");
 const editor = createEditor(document.querySelector("#editor"));
@@ -56,6 +57,7 @@ function updateDemos(nextDemos) {
 async function runPreview() {
   clearTimeout(pending);
   const version = ++runVersion;
+  consoleLogs.replaceChildren();
   clearError();
   status.textContent = "Running…";
   previewCode = editor.getValue();
@@ -80,6 +82,7 @@ async function runPreview() {
 
 function showDemo() {
   ++runVersion;
+  consoleLogs.replaceChildren();
   clearError();
   clearTimeout(pending);
   const demo = demos.find((item) => item.id === select.value);
@@ -111,6 +114,18 @@ function onPreviewMessage(event) {
   } else if (event.data?.type === "sketch-ready") {
     // An animation can throw before setup finishes; retain that error.
     if (previewError.hidden) status.textContent = "Live preview";
+  } else if (event.data?.type === "sketch-log") {
+    if (editor.getValue() !== previewCode) return;
+    if (typeof event.data.text !== "string") return;
+    const follow =
+      consoleLogs.scrollTop + consoleLogs.clientHeight >=
+      consoleLogs.scrollHeight - 8;
+    const row = document.createElement("div");
+    row.textContent = event.data.text;
+    consoleLogs.append(row);
+    while (consoleLogs.childElementCount > 100)
+      consoleLogs.firstElementChild.remove();
+    if (follow) consoleLogs.scrollTop = consoleLogs.scrollHeight;
   } else if (event.data?.type === "sketch-error") {
     if (editor.getValue() === previewCode) showError(event.data);
   }

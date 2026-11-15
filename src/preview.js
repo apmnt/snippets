@@ -3,6 +3,11 @@ import { init, parse } from "es-module-lexer";
 import { p5Demo } from "./p5-demo.js";
 import { createHelper } from "./helper.js";
 import { sketchError, sketchSource, sourcePosition } from "./sketch-errors.js";
+import { captureConsoleLogs } from "./preview-console.js";
+
+// The global-name checker scans this loader's script tag, not the imported
+// instance-mode sketch, and reports false collisions such as our local "code".
+p5.disableSketchChecker = true;
 
 // These libraries are bundled by Vite; edited modules import them through a
 // small bridge, so the same source works in development and static builds.
@@ -31,6 +36,8 @@ const bridges = new Map([
 function report(type, details = {}) {
   parent.postMessage({ type, ...details }, location.origin);
 }
+
+captureConsoleLogs(console, (text) => report("sketch-log", { text }));
 
 window.addEventListener("error", (event) => {
   report("sketch-error", sketchError(event.error ?? event.message, event));
