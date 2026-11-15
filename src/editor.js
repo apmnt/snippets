@@ -1,4 +1,6 @@
 import * as monaco from "monaco-editor/editor/editor.api.js";
+import "monaco-editor/editor/contrib/wordHighlighter/browser/wordHighlighter.js";
+import "monaco-editor/editor/contrib/multicursor/browser/multicursor.js";
 import { getJavaScriptWorker } from "monaco-editor/language/typescript/monaco.contribution.js";
 import "monaco-editor/languages/definitions/javascript/register.js";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
@@ -107,6 +109,8 @@ export function createEditor(container) {
     value: "",
     language: "javascript",
     automaticLayout: true,
+    occurrencesHighlight: "singleFile",
+    selectionHighlight: true,
     minimap: { enabled: false },
     fontSize: 13,
     lineHeight: 21,
