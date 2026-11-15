@@ -14,7 +14,7 @@ export default p5Demo((p) => {
     if (p.key.toLowerCase() === "d") helper.enabled = !helper.enabled;
   };
   p.draw = () => {
-    p.background("#f0f0ed");
+    p.background("#ffffff");
     const time = p.millis() / 1000;
     const x = p.width / 2 + Math.cos(time) * 100;
     const y = p.height / 2 + Math.sin(time) * 100;

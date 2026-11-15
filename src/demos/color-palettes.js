@@ -50,7 +50,7 @@ export default p5Demo((p) => {
   };
 
   p.draw = () => {
-    p.background("#f0f0ed");
+    p.background("#ffffff");
     p.noStroke();
     const margin = 20;
     const width = p.width - margin * 2;

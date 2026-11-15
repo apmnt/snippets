@@ -24,7 +24,7 @@ export default p5Demo((p) => {
   };
 
   p.draw = () => {
-    p.background("#f0f0ed");
+    p.background("#ffffff");
     p.fill("#588cbd");
     p.circle(position.x, position.y, 40);
   };
