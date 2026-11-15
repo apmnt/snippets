@@ -2,7 +2,7 @@ import { p5Demo } from "../p5-demo.js";
 import { createHelper } from "../helper.js";
 
 export const meta = {
-  title: "Helper tools",
+  title: "helper tools",
   description:
     "Grid, axes, points, bounds, vectors, and mouse/FPS. Press D to toggle overlays.",
   order: 10,
