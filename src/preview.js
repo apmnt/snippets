@@ -37,13 +37,19 @@ function report(type, details = {}) {
   parent.postMessage({ type, ...details }, location.origin);
 }
 
-captureConsoleLogs(console, (text) => report("sketch-log", { text }));
+captureConsoleLogs(console, (text) => report("sketch-log", { text }), {
+  sourceName: sketchSource,
+});
+let sourceMap;
 
 window.addEventListener("error", (event) => {
-  report("sketch-error", sketchError(event.error ?? event.message, event));
+  report(
+    "sketch-error",
+    sketchError(event.error ?? event.message, event, sourceMap),
+  );
 });
 window.addEventListener("unhandledrejection", (event) => {
-  report("sketch-error", sketchError(event.reason));
+  report("sketch-error", sketchError(event.reason, undefined, sourceMap));
 });
 
 window.addEventListener("message", async (event) => {
@@ -55,6 +61,7 @@ window.addEventListener("message", async (event) => {
     return;
 
   let url;
+  sourceMap = event.data.sourceMap;
   try {
     await init();
     let code = event.data.code;
@@ -92,7 +99,7 @@ window.addEventListener("message", async (event) => {
     module.default(document.querySelector("#stage"));
     report("sketch-ready");
   } catch (cause) {
-    report("sketch-error", sketchError(cause));
+    report("sketch-error", sketchError(cause, undefined, sourceMap));
   } finally {
     if (url) URL.revokeObjectURL(url);
   }

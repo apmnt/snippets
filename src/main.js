@@ -2,7 +2,13 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "./style.css";
 import { demos as initialDemos } from "./demos.js";
-import { createEditor, getSyntaxError, setSketchError } from "./editor.js";
+import {
+  createEditor,
+  getSyntaxError,
+  setSketchError,
+  setEditorSource,
+  getPreviewSource,
+} from "./editor.js";
 
 const select = document.querySelector("#demo");
 const stage = document.querySelector("#stage");
@@ -15,6 +21,7 @@ const drafts = new Map();
 let demos = initialDemos;
 let preview;
 let previewCode;
+let previewSource;
 let pending;
 let changingDemo = false;
 let runVersion = 0;
@@ -74,6 +81,15 @@ async function runPreview() {
     // A worker failure must not prevent the preview from running.
     if (version !== runVersion) return;
   }
+  try {
+    const source = await getPreviewSource(editor);
+    if (version !== runVersion) return;
+    previewSource = source;
+  } catch (cause) {
+    if (version !== runVersion) return;
+    showError({ message: cause.message });
+    return;
+  }
   preview = document.createElement("iframe");
   preview.title = "Live sketch preview";
   preview.src = `${import.meta.env.BASE_URL}preview.html`;
@@ -87,10 +103,17 @@ function showDemo() {
   clearTimeout(pending);
   const demo = demos.find((item) => item.id === select.value);
   changingDemo = true;
-  editor.setValue(demo ? (drafts.get(demo.id) ?? demo.code) : "");
+  setEditorSource(
+    editor,
+    demo ? (drafts.get(demo.id) ?? demo.code) : "",
+    demo?.filename,
+  );
   changingDemo = false;
+  document.querySelector("#editor-language").textContent =
+    demo?.language === "typescript" ? "TypeScript" : "JavaScript";
   document.querySelector("#description").textContent =
-    demo?.description ?? "Add a JavaScript file to src/demos to get started.";
+    demo?.description ??
+    "Add a JavaScript or TypeScript file to src/demos to get started.";
   if (demo) {
     runPreview();
   } else {
@@ -108,7 +131,7 @@ function onPreviewMessage(event) {
     return;
   if (event.data?.type === "preview-ready") {
     preview.contentWindow.postMessage(
-      { type: "run-sketch", code: previewCode },
+      { type: "run-sketch", ...previewSource },
       location.origin,
     );
   } else if (event.data?.type === "sketch-ready") {
@@ -146,8 +169,7 @@ select.addEventListener("change", showDemo);
 document.querySelector("#restart").addEventListener("click", runPreview);
 document.querySelector("#format").addEventListener("click", async () => {
   const formatted = await editor.getAction("format-code").run();
-  if (!formatted)
-    status.textContent = "Couldn't format. Check JavaScript syntax.";
+  if (!formatted) status.textContent = "Couldn't format. Check syntax.";
   editor.focus();
 });
 reset.addEventListener("click", () => {

@@ -1,6 +1,6 @@
 // Vite discovers new files automatically, including during development.
-const modules = import.meta.glob("./demos/*.js", { eager: true });
-const sources = import.meta.glob("./demos/*.js", {
+const modules = import.meta.glob("./demos/*.{js,ts}", { eager: true });
+const sources = import.meta.glob("./demos/*.{js,ts}", {
   eager: true,
   query: "?raw",
   import: "default",
@@ -9,11 +9,14 @@ const sources = import.meta.glob("./demos/*.js", {
 export const demos = Object.entries(modules)
   .filter(([, module]) => typeof module.default === "function")
   .map(([path, module]) => {
-    const id = path.split("/").pop().replace(/\.js$/, "");
+    const filename = path.split("/").pop();
+    const name = filename.replace(/\.(js|ts)$/, "");
     const { title, description = "", order = Infinity } = module.meta ?? {};
     return {
-      id,
-      title: title ?? id.replace(/[-_]/g, " "),
+      id: filename,
+      filename,
+      language: filename.endsWith(".ts") ? "typescript" : "javascript",
+      title: title ?? name.replace(/[-_]/g, " "),
       description,
       order,
       mount: module.default,

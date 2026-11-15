@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview --host 0.0.0.0",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
+    "@jridgewell/trace-mapping": "^0.3.31",
     "colorjs.io": "^0.6.1",
     "es-module-lexer": "^3.0.4",
     "monaco-editor": "^0.57.0",
@@ -19,6 +21,7 @@
   },
   "devDependencies": {
     "prettier": "3.10.1",
+    "typescript": "^7.0.2",
     "vite": "^7.2.2"
   }
 }

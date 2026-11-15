@@ -31,3 +31,25 @@ test("forwards logs and keeps the original developer console working", () => {
   restore();
   assert.equal(target.log, original);
 });
+
+test("preview includes direct sketch logs and excludes library messages", () => {
+  const developerLogs = [];
+  const previewLogs = [];
+  const target = { log: (...values) => developerLogs.push(values) };
+  const restore = captureConsoleLogs(target, (text) => previewLogs.push(text), {
+    sourceName: "snippets-sketch.js",
+  });
+  const library = new Function(
+    "console",
+    'console.log("library notice");\n//# sourceURL=p5-library.js',
+  );
+  const sketch = new Function(
+    "console",
+    "library",
+    'console.log("sketch log"); library(console);\n//# sourceURL=snippets-sketch.js',
+  );
+  sketch(target, library);
+  assert.deepEqual(previewLogs, ["sketch log"]);
+  assert.equal(developerLogs.length, 2);
+  restore();
+});

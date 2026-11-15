@@ -6,18 +6,64 @@ import "monaco-editor/editor/contrib/hover/browser/hoverContribution.js";
 import "monaco-editor/editor/contrib/parameterHints/browser/parameterHints.js";
 import {
   getJavaScriptWorker,
+  getTypeScriptWorker,
   javascriptDefaults,
+  typescriptDefaults,
   ModuleKind,
   ModuleResolutionKind,
   ScriptTarget,
 } from "monaco-editor/language/typescript/monaco.contribution.js";
 import "monaco-editor/languages/definitions/javascript/register.js";
+import "monaco-editor/languages/definitions/typescript/register.js";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 import TypeScriptWorker from "monaco-editor/language/typescript/ts.worker.js?worker";
 import formatOptions from "../.prettierrc.json";
 import { editorLibraries } from "./editor-libraries.js";
 
 let formatter;
+
+function isTypeScript(model) {
+  return (
+    model.getLanguageId() === "typescript" || model.uri.path.endsWith(".ts")
+  );
+}
+
+async function getLanguageWorker(model) {
+  const getWorker = isTypeScript(model)
+    ? getTypeScriptWorker
+    : getJavaScriptWorker;
+  return (await getWorker())(model.uri);
+}
+
+export function setEditorSource(editor, source, filename = "sketch.js") {
+  const language = filename.endsWith(".ts") ? "typescript" : "javascript";
+  const uri = monaco.Uri.parse(`file:///src/demos/${filename}`);
+  const previous = editor.getModel();
+  if (previous?.uri.toString() === uri.toString()) {
+    previous.setValue(source);
+  } else {
+    editor.setModel(monaco.editor.createModel(source, language, uri));
+    previous?.dispose();
+  }
+  editor.updateOptions({
+    ariaLabel: `Sketch ${language === "typescript" ? "TypeScript" : "JavaScript"} source`,
+  });
+}
+
+export async function getPreviewSource(editor) {
+  const model = editor.getModel();
+  if (!isTypeScript(model)) return { code: model.getValue() };
+  const worker = await getLanguageWorker(model);
+  const output = await worker.getEmitOutput(model.uri.toString());
+  const script = output.outputFiles.find((file) => file.name.endsWith(".js"));
+  if (output.emitSkipped || !script)
+    throw new Error("TypeScript compilation failed.");
+  return {
+    code: script.text.replace(/^\/\/# sourceMappingURL=.*$/gm, ""),
+    sourceMap: output.outputFiles.find((file) => file.name.endsWith(".js.map"))
+      ?.text,
+  };
+}
 
 export function setSketchError(editor, error) {
   const model = editor.getModel();
@@ -44,7 +90,7 @@ export function setSketchError(editor, error) {
 
 export async function getSyntaxError(editor) {
   const model = editor.getModel();
-  const worker = await (await getJavaScriptWorker())(model.uri);
+  const worker = await getLanguageWorker(model);
   const diagnostics = await worker.getSyntacticDiagnostics(
     model.uri.toString(),
   );
@@ -76,12 +122,13 @@ async function formatCode(editor) {
       import("prettier/standalone"),
       import("prettier/plugins/babel"),
       import("prettier/plugins/estree"),
+      import("prettier/plugins/typescript"),
     ]);
-    const [prettier, babel, estree] = await formatter;
+    const [prettier, babel, estree, typescript] = await formatter;
     const result = await prettier.formatWithCursor(source, {
       ...formatOptions,
-      parser: "babel",
-      plugins: [babel.default, estree.default],
+      parser: isTypeScript(model) ? "typescript" : "babel",
+      plugins: [babel.default, estree.default, typescript.default],
       cursorOffset,
     });
     // Formatting can finish after another edit or a demo change.
@@ -101,7 +148,7 @@ async function formatCode(editor) {
     }
     return true;
   } catch {
-    // Incomplete JavaScript stays editable until the syntax is fixed.
+    // Incomplete code stays editable until the syntax is fixed.
     return false;
   }
 }
@@ -115,17 +162,32 @@ self.MonacoEnvironment = {
 };
 
 export function createEditor(container) {
-  javascriptDefaults.setCompilerOptions({
-    ...javascriptDefaults.getCompilerOptions(),
-    target: ScriptTarget.ESNext,
-    module: ModuleKind.ESNext,
-    moduleResolution: ModuleResolutionKind.NodeJs,
-    allowJs: true,
-    allowSyntheticDefaultImports: true,
-    checkJs: false,
+  typescriptDefaults.setDiagnosticsOptions({
+    ...typescriptDefaults.getDiagnosticsOptions(),
+    noSemanticValidation: false,
+    noSyntaxValidation: false,
+    noSuggestionDiagnostics: false,
   });
-  const libraries = Object.entries(editorLibraries).map(([path, source]) =>
-    javascriptDefaults.addExtraLib(source, path),
+  const defaults = [javascriptDefaults, typescriptDefaults];
+  for (const settings of defaults)
+    settings.setCompilerOptions({
+      ...settings.getCompilerOptions(),
+      target: ScriptTarget.ESNext,
+      module: ModuleKind.ESNext,
+      moduleResolution: ModuleResolutionKind.NodeJs,
+      allowJs: true,
+      allowSyntheticDefaultImports: true,
+      checkJs: false,
+      strict: settings === typescriptDefaults,
+      skipLibCheck: true,
+      noEmit: false,
+      noEmitOnError: false,
+      sourceMap: true,
+    });
+  const libraries = defaults.flatMap((settings) =>
+    Object.entries(editorLibraries).map(([path, source]) =>
+      settings.addExtraLib(source, path),
+    ),
   );
   const editor = monaco.editor.create(container, {
     model: monaco.editor.createModel(
