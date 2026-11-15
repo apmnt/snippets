@@ -1,11 +1,21 @@
 import * as monaco from "monaco-editor/editor/editor.api.js";
 import "monaco-editor/editor/contrib/wordHighlighter/browser/wordHighlighter.js";
 import "monaco-editor/editor/contrib/multicursor/browser/multicursor.js";
-import { getJavaScriptWorker } from "monaco-editor/language/typescript/monaco.contribution.js";
+import "monaco-editor/editor/contrib/suggest/browser/suggestController.js";
+import "monaco-editor/editor/contrib/hover/browser/hoverContribution.js";
+import "monaco-editor/editor/contrib/parameterHints/browser/parameterHints.js";
+import {
+  getJavaScriptWorker,
+  javascriptDefaults,
+  ModuleKind,
+  ModuleResolutionKind,
+  ScriptTarget,
+} from "monaco-editor/language/typescript/monaco.contribution.js";
 import "monaco-editor/languages/definitions/javascript/register.js";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 import TypeScriptWorker from "monaco-editor/language/typescript/ts.worker.js?worker";
 import formatOptions from "../.prettierrc.json";
+import { editorLibraries } from "./editor-libraries.js";
 
 let formatter;
 
@@ -105,10 +115,29 @@ self.MonacoEnvironment = {
 };
 
 export function createEditor(container) {
+  javascriptDefaults.setCompilerOptions({
+    ...javascriptDefaults.getCompilerOptions(),
+    target: ScriptTarget.ESNext,
+    module: ModuleKind.ESNext,
+    moduleResolution: ModuleResolutionKind.NodeJs,
+    allowJs: true,
+    allowSyntheticDefaultImports: true,
+    checkJs: false,
+  });
+  const libraries = Object.entries(editorLibraries).map(([path, source]) =>
+    javascriptDefaults.addExtraLib(source, path),
+  );
   const editor = monaco.editor.create(container, {
-    value: "",
-    language: "javascript",
+    model: monaco.editor.createModel(
+      "",
+      "javascript",
+      monaco.Uri.parse("file:///src/demos/sketch.js"),
+    ),
     automaticLayout: true,
+    quickSuggestions: { other: true, comments: false, strings: false },
+    suggestOnTriggerCharacters: true,
+    hover: { enabled: true },
+    parameterHints: { enabled: true },
     occurrencesHighlight: "singleFile",
     selectionHighlight: true,
     minimap: { enabled: false },
@@ -119,6 +148,7 @@ export function createEditor(container) {
     padding: { top: 16, bottom: 16 },
     ariaLabel: "Sketch JavaScript source",
   });
+  editor.onDidDispose(() => libraries.forEach((library) => library.dispose()));
   editor.addAction({
     id: "format-code",
     label: "Format code",
