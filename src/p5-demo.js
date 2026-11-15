@@ -4,6 +4,8 @@ import { getValidLanguages } from "./p5-locale.js";
 // Sanitize only p5's error-message locales; leave browser preferences alone.
 p5.FES.languageCode = getValidLanguages(globalThis.navigator?.languages);
 
+const squareSize = (width, height) => Math.max(1, Math.min(width, height));
+
 /**
  * Give every sketch its own instance, canvas, and animation lifecycle.
  * @param {(p: p5) => void} sketch
@@ -15,14 +17,19 @@ export function p5Demo(sketch) {
       sketch(p);
       const setup = p.setup;
       p.setup = () => {
-        p.createCanvas(container.clientWidth, container.clientHeight);
+        const size = squareSize(container.clientWidth, container.clientHeight);
+        p.createCanvas(size, size);
         return setup?.();
       };
     }, container);
 
     const resize = new ResizeObserver(() => {
-      if (instance.canvas) {
-        instance.resizeCanvas(container.clientWidth, container.clientHeight);
+      const size = squareSize(container.clientWidth, container.clientHeight);
+      if (
+        instance.canvas &&
+        (instance.width !== size || instance.height !== size)
+      ) {
+        instance.resizeCanvas(size, size);
       }
     });
     resize.observe(container);
