@@ -1,6 +1,7 @@
-import type p5 from "p5";
 import { p5Demo } from "../p5-demo.js";
 import { createHelper } from "../helper.js";
+
+const DESIGN_SIZE = 500;
 
 export default p5Demo((p) => {
   const helper = createHelper(p);
@@ -25,15 +26,14 @@ export default p5Demo((p) => {
       z: p.random(0, 10),
     }));
 
-  let rectangles: ReturnType<typeof makeStack>;
-
-  p.setup = () => {
-    rectangles = makeStack(p.width, p.height);
-  };
+  // Generate once in reference coordinates so resizing preserves work.
+  const rectangles = makeStack(DESIGN_SIZE, DESIGN_SIZE);
 
   p.draw = () => {
     p.background("#ffffff");
     p.noStroke();
+    p.push();
+    p.scale(Math.min(p.width, p.height) / DESIGN_SIZE);
 
     rectangles.forEach(({ x, y, angle, color }) => {
       p.push();
@@ -43,5 +43,6 @@ export default p5Demo((p) => {
       p.rect(-rectWidth, -rectHeight / 2, rectWidth, rectHeight);
       p.pop();
     });
+    p.pop();
   };
 });
