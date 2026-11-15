@@ -7,7 +7,7 @@ export default p5Demo((p) => {
   const helper = createHelper(p);
 
   const rectWidth = 200;
-  const rectHeight = 40;
+  const rectHeight = 50;
 
   const randomAngleRange = 0.1;
   const randomXRange = 30;
