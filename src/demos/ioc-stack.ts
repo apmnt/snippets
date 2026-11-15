@@ -11,7 +11,7 @@ export default p5Demo((p) => {
 
   const randomAngleRange = 0.1;
   const randomXRange = 30;
-  const randomYRange = 20;
+  const randomYRange = 10;
 
   const makeStack = (width: number, height: number) =>
     Array.from({ length: 8 }, (_, i) => ({
