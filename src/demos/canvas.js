@@ -1,8 +1,8 @@
 // Any demo can use plain DOM, Canvas, WebGL, or another library.
 // Return a function that releases its resources when switching away.
 export const meta = {
-  title: "Canvas",
-  description: "Plain JS canvas",
+  title: "canvas",
+  description: "plain JS canvas",
   order: 4,
 };
 

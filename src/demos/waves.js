@@ -1,8 +1,8 @@
 import { p5Demo } from "../p5-demo.js";
 
 export const meta = {
-  title: "Waves",
-  description: "p5.js sine waves.",
+  title: "saves",
+  description: "p5.js sine waves",
   order: 2,
 };
 
