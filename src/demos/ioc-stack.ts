@@ -29,7 +29,7 @@ export default p5Demo((p) => {
   // Generate once in reference coordinates so resizing preserves work.
   const rectangles = makeStack(DESIGN_SIZE, DESIGN_SIZE);
 
-  p.draw = () => {
+  p.setup = () => {
     p.background("#ffffff");
     p.noStroke();
     p.push();
