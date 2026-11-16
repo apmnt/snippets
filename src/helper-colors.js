@@ -83,13 +83,20 @@ export function createColorTools(random) {
   return {
     /**
      * Generate a nearby color as a CSS hex string. Accepts a CSS color or p5.Color.
-     * Uses p.randomSeed() and preserves alpha. Independent of helper.enabled.
+     * Uses p.randomSeed() and preserves alpha unless opacity is supplied.
+     * Independent of helper.enabled.
      * @param {string | import("p5").default.Color} base
-     * @param {ColorOptions} [options]
+     * @param {ColorOptions & {opacity?: number}} [options] Opacity from 0 to 1; defaults to the base alpha.
      * @returns {string}
      */
-    randomColor(base, { spread = 0.2, harmony = "analogous" } = {}) {
+    randomColor(base, { spread = 0.2, harmony = "analogous", opacity } = {}) {
       const color = prepare(base, spread, harmony);
+      if (opacity !== undefined) {
+        if (!Number.isFinite(opacity) || opacity < 0 || opacity > 1) {
+          throw new RangeError("Color opacity must be between 0 and 1.");
+        }
+        color.alpha = opacity;
+      }
       const offset = color.offsets[Math.floor(random() * color.offsets.length)];
       return sample(color, spread, harmony, offset);
     },
