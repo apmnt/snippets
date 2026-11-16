@@ -2,7 +2,7 @@ import { p5Demo } from "../p5-demo.js";
 import { createHelper } from "../helper.js";
 
 export default p5Demo((p) => {
-  const helper = createHelper(p);
+
   const cols = 10;
   const rows = 24;
   const circleRadius = 10.5;
