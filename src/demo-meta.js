@@ -18,6 +18,12 @@ export const demoMeta = {
       "A stack of colored blocks. Inspired by an illustration in a book Interaction of Color by Josef Albers",
     order: 12,
   },
+  "ioc-dots.ts": {
+    title: "ioc: dots",
+    description:
+      "Optical mixture inspired by an illustration in a book Interaction of Color by Josef Albers",
+    order: 12,
+  },
   "typed-points.ts": {
     title: "TypeScript points",
     description:
