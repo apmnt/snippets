@@ -29,6 +29,14 @@ p5.registerAddon((_, __, hooks) => {
   hooks.presetup = function () {
     p5Started = true;
   };
+  // Setup-only sketches never run postdraw. p5 awaits setup before this hook.
+  hooks.postsetup = function () {
+    if (typeof this.draw !== "function") {
+      this.noLoop();
+      if (!window.__sketchCapture.error)
+        window.__sketchCapture = { ready: true };
+    }
+  };
   hooks.postdraw = function () {
     this.noLoop();
     if (!window.__sketchCapture.error) window.__sketchCapture = { ready: true };
